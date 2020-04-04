@@ -59,7 +59,7 @@ extern "C" {
 
 extern "C" void ipl_into_image(IplImage* src, image im);
 extern "C" image ipl_to_image(IplImage* src);
-extern "C" void show_image_cv(image p, const char *name, IplImage *disp);
+extern "C" int show_image_cv(image p, const char *name, int ms);
 
 namespace darknet_ros {
 
@@ -69,12 +69,6 @@ typedef struct
   float x, y, w, h, prob;
   int num, Class;
 } RosBox_;
-
-typedef struct
-{
-  IplImage* image;
-  std_msgs::Header header;
-} IplImageWithHeader_;
 
 class YoloObjectDetector
 {
@@ -238,8 +232,6 @@ class YoloObjectDetector
                     int frames, int fullscreen);
 
   void yolo();
-
-  IplImageWithHeader_ getIplImageWithHeader();
 
   bool getImageStatus(void);
 

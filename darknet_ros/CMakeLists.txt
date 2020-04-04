@@ -115,6 +115,8 @@ set(DARKNET_CORE_FILES
     ${DARKNET_PATH}/src/gru_layer.c               ${DARKNET_PATH}/src/utils.c
     ${DARKNET_PATH}/src/upsample_layer.c          ${DARKNET_PATH}/src/logistic_layer.c
     ${DARKNET_PATH}/src/l2norm_layer.c            ${DARKNET_PATH}/src/yolo_layer.c
+    ${DARKNET_PATH}/src/image_opencv.cpp
+    ${DARKNET_PATH}/src/iseg_layer.c
 
     ${DARKNET_PATH}/examples/art.c                ${DARKNET_PATH}/examples/lsd.c
     ${DARKNET_PATH}/examples/attention.c          ${DARKNET_PATH}/examples/nightmare.c
@@ -125,6 +127,7 @@ set(DARKNET_CORE_FILES
     ${DARKNET_PATH}/examples/darknet.c            ${DARKNET_PATH}/examples/tag.c
     ${DARKNET_PATH}/examples/detector.c           ${DARKNET_PATH}/examples/yolo.c
     ${DARKNET_PATH}/examples/go.c
+    ${DARKNET_PATH}/examples/instance-segmenter.c
 )
 
 set(DARKNET_CUDA_FILES

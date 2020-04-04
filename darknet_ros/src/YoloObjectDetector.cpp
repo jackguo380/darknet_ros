@@ -408,10 +408,9 @@ void *YoloObjectDetector::fetchInThread()
 {
   {
     boost::shared_lock<boost::shared_mutex> lock(mutexImageCallback_);
-    IplImageWithHeader_ imageAndHeader = getIplImageWithHeader();
-    IplImage* ROS_img = imageAndHeader.image;
-    ipl_into_image(ROS_img, buff_[buffIndex_]);
-    headerBuff_[buffIndex_] = imageAndHeader.header;
+    IplImage ipl = cvIplImage(camImageCopy_);
+    ipl_into_image(&ipl, buff_[buffIndex_]);
+    headerBuff_[buffIndex_] = imageHeader_;
     buffId_[buffIndex_] = actionId_;
   }
   rgbgr_image(buff_[buffIndex_]);
@@ -421,7 +420,7 @@ void *YoloObjectDetector::fetchInThread()
 
 void *YoloObjectDetector::displayInThread(void *ptr)
 {
-  show_image_cv(buff_[(buffIndex_ + 1)%3], "YOLO V3", ipl_);
+  show_image_cv(buff_[(buffIndex_ + 1)%3], "YOLO V3", waitKeyDelay_);
   int c = cv::waitKey(waitKeyDelay_);
   if (c != -1) c = c%256;
   if (c == 27) {
@@ -504,10 +503,9 @@ void YoloObjectDetector::yolo()
 
   {
     boost::shared_lock<boost::shared_mutex> lock(mutexImageCallback_);
-    IplImageWithHeader_ imageAndHeader = getIplImageWithHeader();
-    IplImage* ROS_img = imageAndHeader.image;
-    buff_[0] = ipl_to_image(ROS_img);
-    headerBuff_[0] = imageAndHeader.header;
+    IplImage ipl = cvIplImage(camImageCopy_);
+    buff_[0] = ipl_to_image(&ipl);
+    headerBuff_[0] = imageHeader_;
   }
   buff_[1] = copy_image(buff_[0]);
   buff_[2] = copy_image(buff_[0]);
@@ -558,13 +556,6 @@ void YoloObjectDetector::yolo()
     }
   }
 
-}
-
-IplImageWithHeader_ YoloObjectDetector::getIplImageWithHeader()
-{
-  IplImage* ROS_img = new IplImage(camImageCopy_);
-  IplImageWithHeader_ header = {.image = ROS_img, .header = imageHeader_};
-  return header;
 }
 
 bool YoloObjectDetector::getImageStatus(void)
