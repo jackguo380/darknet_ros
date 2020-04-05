@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.12)
+cmake_minimum_required(VERSION 3.5)
 project(darknet_ros)
 
 # Set c++11 cmake flags
@@ -216,7 +216,16 @@ set(FILE "${PATH}/yolov2-tiny.weights")
 message(STATUS "Checking and downloading yolov2-tiny.weights if needed ...")
 if (NOT EXISTS "${FILE}")
   message(STATUS "... file does not exist. Downloading now ...")
-  execute_process(COMMAND wget http://pjreddie.com/media/files/yolov2-tiny.weights -P ${PATH})
+  file(DOWNLOAD https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov2-tiny.weights "${FILE}"
+    STATUS dl_status
+    EXPECTED_HASH SHA1=b6c3ba64aa71af2fa78f964ce68e509ed0e75383
+  )
+
+  list(GET dl_status 0 dl_code)
+  list(GET dl_status 1 dl_err)
+  if (NOT dl_code EQUAL 0)
+    message(FATAL_ERROR "Could not download yolov2 tiny weights: ${dl_err}")
+  endif()
 endif()
 
 # Download yolov3.weights
@@ -224,7 +233,16 @@ set(FILE "${PATH}/yolov3.weights")
 message(STATUS "Checking and downloading yolov3.weights if needed ...")
 if (NOT EXISTS "${FILE}")
   message(STATUS "... file does not exist. Downloading now ...")
-  execute_process(COMMAND wget http://pjreddie.com/media/files/yolov3.weights -P ${PATH})
+  file(DOWNLOAD https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov3.weights "${FILE}"
+    STATUS dl_status
+    EXPECTED_HASH SHA1=520878f12e97cf820529daea502acca380f1cb8e
+  )
+
+  list(GET dl_status 0 dl_code)
+  list(GET dl_status 1 dl_err)
+  if (NOT dl_code EQUAL 0)
+    message(FATAL_ERROR "Could not download yolov3 weights: ${dl_err}")
+  endif()
 endif()
 
 #############
@@ -238,7 +256,16 @@ if(CATKIN_ENABLE_TESTING)
   message(STATUS "Checking and downloading yolov2.weights if needed ...")
   if (NOT EXISTS "${FILE}")
     message(STATUS "... file does not exist. Downloading now ...")
-    execute_process(COMMAND wget http://pjreddie.com/media/files/yolov2.weights -P ${PATH})
+    file(DOWNLOAD https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov2.weights "${FILE}"
+      STATUS dl_status
+      EXPECTED_HASH SHA1=a2248b25c50307b4e2ba298473e05396e79df9d1
+    )
+
+    list(GET dl_status 0 dl_code)
+    list(GET dl_status 1 dl_err)
+    if (NOT dl_code EQUAL 0)
+      message(FATAL_ERROR "Could not download yolov2 weights: ${dl_err}")
+    endif()
   endif()
 
   find_package(rostest REQUIRED)
