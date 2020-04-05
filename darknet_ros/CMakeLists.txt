@@ -210,64 +210,57 @@ install(DIRECTORY config launch yolo_network_config
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-# Download yolov2-tiny.weights
-set(PATH "${CMAKE_CURRENT_SOURCE_DIR}/yolo_network_config/weights")
-set(FILE "${PATH}/yolov2-tiny.weights")
-message(STATUS "Checking and downloading yolov2-tiny.weights if needed ...")
-if (NOT EXISTS "${FILE}")
-  message(STATUS "... file does not exist. Downloading now ...")
-  file(DOWNLOAD https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov2-tiny.weights "${FILE}"
-    STATUS dl_status
-    EXPECTED_HASH SHA1=b6c3ba64aa71af2fa78f964ce68e509ed0e75383
-  )
+set(WEIGHTS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/yolo_network_config/weights")
 
-  list(GET dl_status 0 dl_code)
-  list(GET dl_status 1 dl_err)
-  if (NOT dl_code EQUAL 0)
-    message(FATAL_ERROR "Could not download yolov2 tiny weights: ${dl_err}")
+function(download_weights url fname sha1sum)
+  set(fpath ${WEIGHTS_PATH}/${fname})
+  message(STATUS "Checking and downloading ${fname} if needed ...")
+
+  if (NOT EXISTS "${fpath}")
+    message(STATUS "... file does not exist. Downloading now ...")
+
+    file(DOWNLOAD "${url}" "${fpath}"
+      STATUS dl_status
+      EXPECTED_HASH SHA1=${sha1sum}
+    )
+
+    list(GET dl_status 0 dl_code)
+    list(GET dl_status 1 dl_err)
+    if (NOT dl_code EQUAL 0)
+      message(FATAL_ERROR "Could not download ${fname}: ${dl_err}")
+    endif()
   endif()
-endif()
+endfunction()
 
-# Download yolov3.weights
-set(FILE "${PATH}/yolov3.weights")
-message(STATUS "Checking and downloading yolov3.weights if needed ...")
-if (NOT EXISTS "${FILE}")
-  message(STATUS "... file does not exist. Downloading now ...")
-  file(DOWNLOAD https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov3.weights "${FILE}"
-    STATUS dl_status
-    EXPECTED_HASH SHA1=520878f12e97cf820529daea502acca380f1cb8e
-  )
+download_weights(
+  "https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov2-tiny.weights"
+  "yolov2-tiny.weights"
+  "b6c3ba64aa71af2fa78f964ce68e509ed0e75383"
+)
 
-  list(GET dl_status 0 dl_code)
-  list(GET dl_status 1 dl_err)
-  if (NOT dl_code EQUAL 0)
-    message(FATAL_ERROR "Could not download yolov3 weights: ${dl_err}")
-  endif()
-endif()
+download_weights(
+  "https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov2.weights"
+  "yolov2.weights"
+  "a2248b25c50307b4e2ba298473e05396e79df9d1"
+)
+
+download_weights(
+  "https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov3-tiny.weights"
+  "yolov3-tiny.weights"
+  "40f3c11883bef62fd850213bc14266632ed4414f"
+)
+
+download_weights(
+  "https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov3.weights"
+  "yolov3.weights"
+  "520878f12e97cf820529daea502acca380f1cb8e"
+)
 
 #############
 ## Testing ##
 #############
 
 if(CATKIN_ENABLE_TESTING)
-  # Download yolov2.weights
-  set(PATH "${CMAKE_CURRENT_SOURCE_DIR}/yolo_network_config/weights")
-  set(FILE "${PATH}/yolov2.weights")
-  message(STATUS "Checking and downloading yolov2.weights if needed ...")
-  if (NOT EXISTS "${FILE}")
-    message(STATUS "... file does not exist. Downloading now ...")
-    file(DOWNLOAD https://github.com/jackguo380/darknet_ros/releases/download/propbot_weights/yolov2.weights "${FILE}"
-      STATUS dl_status
-      EXPECTED_HASH SHA1=a2248b25c50307b4e2ba298473e05396e79df9d1
-    )
-
-    list(GET dl_status 0 dl_code)
-    list(GET dl_status 1 dl_err)
-    if (NOT dl_code EQUAL 0)
-      message(FATAL_ERROR "Could not download yolov2 weights: ${dl_err}")
-    endif()
-  endif()
-
   find_package(rostest REQUIRED)
 
   # Object detection in images.
